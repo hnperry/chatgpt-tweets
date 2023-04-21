@@ -136,6 +136,107 @@ research preview of our newest model chatgpt trying something new with this prev
 
 These tweets are now much more suitable for working with. Now we are ready to continue with the analysis.
 
-### 1.2 Tokenize the text data
+### 1.2 Wordcloud
 
-Coming soon...
+For some EDA, I decided to create a wordcloud of the most frequent words in the tweet data.
+
+```
+df=pd.read_csv("gpt_clean_tweets.csv")
+
+#Import stop words
+from nltk.corpus import stopwords
+stop_words = list(stopwords.words('english'))
+
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
+import warnings
+warnings.filterwarnings("ignore")
+
+#Create a variable that is a long string with all the words in the text column
+df[['tweets']] = df[['tweets']].astype(str)
+text = ' '.join(df['tweets'])
+
+#Create wordcloud and print
+cloud = WordCloud(collocations = False, width=1600, height=800, max_words=100, colormap='tab20b', background_color = 'white', random_state = 1, stopwords=stop_words).generate(text)
+plt.imshow(cloud,interpolation='bilinear')
+plt.axis("off")
+plt.show()
+```
+
+![wordcloud](https://user-images.githubusercontent.com/116209783/233725463-6050eeb9-002b-49c8-8022-c92c6dc25da3.png)
+
+### 1.3 Data Tokenization
+
+Tokenization splits our twitter strings into individual tokens.
+
+```
+from nltk.tokenize import RegexpTokenizer
+
+tokenizer = RegexpTokenizer(r'\w+')
+df['tokens'] = df['tweets'].apply(tokenizer.tokenize)
+print(df.head())
+```
+```
+                                             tweets  labels                                             tokens
+0  chatgpt optimizing language models for dialogue         0  [chatgpt, optimizing, language, models, for, d...
+1  try talking with chatgpt our new ai system whi...       1  [try, talking, with, chatgpt, our, new, ai, sy...
+2  chatgpt optimizing language models for dialogu...       0  [chatgpt, optimizing, language, models, for, d...
+3  thrilled to share that chatgpt our new model o...       1  [thrilled, to, share, that, chatgpt, our, new,...
+4  as of minutes ago released their new chatgpt y...      -1  [as, of, minutes, ago, released, their, new, c...
+```
+
+### 1.3.1 Sentence Length
+
+#### 1.3.2 Frequency Distribution
+
+Another way of visualizing this data is to calculate the frequency distribution of each word and plot it as a bar chart. 
+
+```
+#Create list of tokens, removing stop words
+import itertools
+words = [word for word in df['tokens']]
+words = list(itertools.chain.from_iterable(words))
+words = [i for i in words if i not in stop_words]
+
+#Calculate frequency distribution
+from nltk.probability import FreqDist
+top_50 = FreqDist(words).most_common(50)
+
+#Plot
+fig, ax = plt.subplots()
+plt.figure(figsize = (10,10))
+ax.bar(range(len(top_50)), [t[1] for t in top_50]  , align="center")
+ax.set_xticks(range(len(top_50)))
+ax.set_xticklabels([t[0] for t in top_50], rotation=45, ha="right")
+plt.show()
+```
+![wordcounts](https://user-images.githubusercontent.com/116209783/233728834-64140916-190e-4a79-8826-cfbf5fc427c8.png)
+
+### 1.4 Sentence Length
+
+Our sentences have an average length of 10-12 words.
+
+```
+from nltk.tokenize import RegexpTokenizer
+
+#NLTK tokenizer
+tokenizer = RegexpTokenizer(r'\w+')
+df['tokens'] = df['tweets'].apply(tokenizer.tokenize)
+print(df.head())
+
+#Check sentence lengths
+length = [len(tokens) for tokens in df['tokens']]
+print(type(length))
+
+#plot
+plt.figure(figsize = (10,10))
+plt.title('Sentence Length')
+plt.xlabel('Count of words')
+plt.ylabel('Number of Tweets')
+plt.hist(length)
+plt.savefig("sentencelength.jpg")
+plt.show()
+```
+
+![sentencelength](https://user-images.githubusercontent.com/116209783/233729778-94c8d373-d1fe-4298-8f88-c36b1392918d.jpg)
+
