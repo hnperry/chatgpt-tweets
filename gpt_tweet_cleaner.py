@@ -5,6 +5,16 @@ import pandas as pd
 df=pd.read_csv("gpt_raw_tweets.csv")
 print(df.head())
 
+print(df['labels'].value_counts())
+
+#plot
+import matplotlib.pyplot as plt
+df['labels'].value_counts().plot.bar(title="Sentiment Counts")
+plt.xticks(rotation=0)
+plt.xlabel('Sentiment')
+plt.ylabel('Count')
+plt.show()
+
 #Drop the unnamed:0 column
 df=df.drop(df.columns[0], axis=1)
 
