@@ -1,4 +1,4 @@
-# ChatGPT Tweets Sentiment Analysis 
+# Natural Language Processing: ChatGPT Tweets Sentiment Analysis 
 
 ![ChatGPT-Header](https://user-images.githubusercontent.com/116209783/233449495-96b3dfb1-3885-4612-bfef-cc44b14df5a1.jpg)
 
